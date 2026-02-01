@@ -6,14 +6,18 @@ Repositório de schemas e mensagens compartilhadas entre serviços LADESA.
 
 ```
 messages/
-└── timetable-generator-v1/     # Mensagens do gerador de grade horária v1
-    ├── justfile                # Automação de build
-    ├── json-schema/            # Definições TypeSpec (fonte única)
-    │   ├── src/                # Arquivos .tsp
-    │   └── lib/                # JSON Schema gerado
-    └── integrations/           # Código gerado por linguagem
-        ├── typescript/         # Pacote npm
-        └── csharp/             # Pacote NuGet
+├── .changeset/                 # Configuração do Changesets
+├── .github/workflows/          # CI/CD
+├── timetable-generator/
+│   └── v1/                     # Versão major da API
+│       ├── CHANGELOG.md
+│       ├── justfile
+│       ├── json-schema/        # Definições TypeSpec
+│       └── integrations/       # Código gerado
+│           ├── typescript/     # Pacote npm
+│           └── csharp/         # Pacote NuGet
+├── justfile                    # Comandos globais
+└── package.json                # Workspaces + Changesets
 ```
 
 ## Pré-requisitos
@@ -21,32 +25,53 @@ messages/
 - [just](https://github.com/casey/just) - Command runner
 - [Podman](https://podman.io/) - Container runtime
 
-## Uso
-
-### Build completo
+## Uso Rápido
 
 ```bash
-cd timetable-generator-v1
-just build
+# Build de um pacote específico
+just tg1 build
+
+# Ou diretamente
+cd timetable-generator/v1 && just build
 ```
 
-### Build apenas schema
+## Versionamento com Changesets
+
+Este repositório usa [Changesets](https://github.com/changesets/changesets) para gerenciar versões.
+
+### Fluxo de Trabalho
+
+1. **Faça suas alterações** nos arquivos `.tsp`
+
+2. **Crie um changeset** descrevendo a mudança:
+   ```bash
+   just changeset-add
+   ```
+   Isso abre um prompt interativo para:
+   - Selecionar pacotes afetados
+   - Escolher tipo de bump (patch/minor/major)
+   - Escrever descrição da mudança
+
+3. **Commit e push**:
+   ```bash
+   git add .
+   git commit -m "feat: sua mudança"
+   git push
+   ```
+
+4. **O CI/CD automaticamente**:
+   - Cria um PR "Version Packages" acumulando changesets
+   - Ao fazer merge do PR, publica npm + NuGet e cria tags
+
+### Comandos Disponíveis
 
 ```bash
-just build-schema
-```
-
-### Build apenas integrações
-
-```bash
-just build-integrations
-```
-
-### Limpar artefatos
-
-```bash
-just clean
-just clean-images  # Remove imagens de container
+just                    # Lista todos os comandos
+just changeset-add      # Adiciona um changeset (interativo)
+just changeset-version  # Aplica versões pendentes
+just changeset-status   # Mostra changesets pendentes
+just build-all          # Build de todos os pacotes
+just tg1 build          # Build do timetable-generator v1
 ```
 
 ## Arquitetura
@@ -66,31 +91,36 @@ just clean-images  # Remove imagens de container
     ┌────┴────┐
     ▼         ▼
 ┌───────┐ ┌───────┐
-│  TS   │ │  C#   │  Código gerado
-│ types │ │classes│
+│  npm  │ │ NuGet │  Pacotes publicados
 └───────┘ └───────┘
 ```
 
-## Pacotes gerados
+## Pacotes
 
-| Linguagem | Pacote | Versão |
-|-----------|--------|--------|
-| TypeScript | `@ladesa/messages.timetable-generator.v1` | 0.0.1 |
-| C# | `Ladesa.Messages.TimetableGenerator.V1` | 0.0.1 |
+| Domínio | Versão | npm | NuGet |
+|---------|--------|-----|-------|
+| timetable-generator | v1 | `@ladesa/messages.timetable-generator.v1` | `Ladesa.Messages.TimetableGenerator.V1` |
 
-## Desenvolvimento
+## Adicionando Novo Schema
 
-### Modificando schemas
+1. Crie a estrutura:
+   ```bash
+   mkdir -p novo-dominio/v1/{json-schema/src,integrations/{typescript/pkg/src,csharp/sln/Generated}}
+   ```
 
-1. Edite os arquivos `.tsp` em `json-schema/src/`
-2. Execute `just build` para regenerar tudo
-3. Os arquivos em `integrations/*/` serão atualizados
+2. Copie os arquivos base de `timetable-generator/v1`
 
-### Adicionando nova linguagem
+3. Adicione o novo pacote em `package.json` (workspaces):
+   ```json
+   {
+     "workspaces": [
+       "timetable-generator/v1/integrations/typescript/pkg",
+       "novo-dominio/v1/integrations/typescript/pkg"
+     ]
+   }
+   ```
 
-1. Crie `integrations/<lang>/generator/Containerfile`
-2. Crie `integrations/<lang>/pkg/` com estrutura do pacote
-3. Adicione recipe no `justfile`
+4. Atualize `.github/workflows/release.yml` para incluir o novo pacote
 
 ## Licença
 

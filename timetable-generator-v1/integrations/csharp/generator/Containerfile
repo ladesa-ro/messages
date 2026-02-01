@@ -1,4 +1,0 @@
-FROM docker.io/oven/bun:1.3.8
-WORKDIR /build
-RUN bun add quicktype@23.2.6
-ENTRYPOINT ["bun", "x", "quicktype@23", "--src-lang", "schema", "/input/schema.json#/$defs/", "-o", "/output/Messages.cs", "--namespace", "Ladesa.Messages.TimetableGenerator.V1", "--framework", "SystemTextJson"]

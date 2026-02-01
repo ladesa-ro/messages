@@ -1,0 +1,9 @@
+FROM docker.io/oven/bun:1.3.8
+
+WORKDIR /app
+COPY ./package.json ./bun.lockb /app/
+RUN bun install
+
+COPY . /app/
+
+ENTRYPOINT "/app/commands/generate.sh";
