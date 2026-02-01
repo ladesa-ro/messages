@@ -24,7 +24,6 @@ model ServiceGenerateResponseResultSuccess {
   generated_timetables: GeneratedTimetable[];
 }
 
-@doc("Resultado da geração: sucesso ou erro")
 alias Result = ServiceGenerateResponseResultSuccess | ServiceGenerateResponseResultError;
 
 @doc("Resposta do serviço de geração de grade horária")
