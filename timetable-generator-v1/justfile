@@ -1,0 +1,52 @@
+set dotenv-load
+
+project_root := justfile_directory()
+schema_dir := project_root / "typespec"
+schema_dist := schema_dir / "dist" / "json-schema"
+ts_dir := project_root / "integrations" / "typescript"
+cs_dir := project_root / "integrations" / "csharp"
+
+# Lista comandos disponíveis
+default:
+    @just --list
+
+# Build tudo (schema + integrações)
+build: build-schema build-integrations
+
+# Build apenas integrações (ts e cs em paralelo)
+build-integrations: build-ts build-cs
+
+# Gera JSON Schema via TypeSpec
+build-schema:
+    podman build -t ladesa/typespec-builder "{{schema_dir}}"
+    podman run --rm \
+        -v "{{schema_dist}}":/build/dist/json-schema \
+        ladesa/typespec-builder
+
+# Gera TypeScript via quicktype
+build-ts:
+    podman build -t ladesa/quicktype-ts "{{ts_dir}}"
+    mkdir -p "{{ts_dir}}/src"
+    podman run --rm \
+        -v "{{schema_dist}}":/input:ro \
+        -v "{{ts_dir}}/src":/output \
+        ladesa/quicktype-ts
+
+# Gera C# via quicktype
+build-cs:
+    podman build -t ladesa/quicktype-cs "{{cs_dir}}"
+    mkdir -p "{{cs_dir}}/Generated"
+    podman run --rm \
+        -v "{{schema_dist}}":/input:ro \
+        -v "{{cs_dir}}/Generated":/output \
+        ladesa/quicktype-cs
+
+# Limpa artefatos gerados
+clean:
+    rm -rf "{{schema_dist}}"
+    rm -rf "{{ts_dir}}/src"
+    rm -rf "{{cs_dir}}/Generated"
+
+# Limpa imagens de container
+clean-images:
+    -podman rmi ladesa/typespec-builder ladesa/quicktype-ts ladesa/quicktype-cs
