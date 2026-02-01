@@ -33,6 +33,7 @@ jobs:
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
-          publish: echo "aaaa"
+          publish: echo "publish!!"
+          version: echo "version!!"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
