@@ -1,5 +1,7 @@
 # LADESA Messages
 
+[![Changesets](https://github.com/ladesa-ro/messages/actions/workflows/changesets.yml/badge.svg)](https://github.com/ladesa-ro/messages/actions/workflows/changesets.yml)
+
 Repositório de schemas e mensagens compartilhadas entre serviços LADESA.
 
 ## Estrutura
@@ -44,15 +46,19 @@ Este repositório usa [Changesets](https://github.com/changesets/changesets) par
 1. **Faça suas alterações** nos arquivos `.tsp`
 
 2. **Crie um changeset** descrevendo a mudança:
+
    ```bash
    just changeset-add
    ```
+
    Isso abre um prompt interativo para:
+
    - Selecionar pacotes afetados
    - Escolher tipo de bump (patch/minor/major)
    - Escrever descrição da mudança
 
 3. **Commit e push**:
+
    ```bash
    git add .
    git commit -m "feat: sua mudança"
@@ -97,13 +103,14 @@ just tg1 build          # Build do timetable-generator v1
 
 ## Pacotes
 
-| Domínio | Versão | npm | NuGet |
-|---------|--------|-----|-------|
-| timetable-generator | v1 | `@ladesa/messages.timetable-generator.v1` | `Ladesa.Messages.TimetableGenerator.V1` |
+| Domínio             | Versão | npm                                       | NuGet                                   |
+| ------------------- | ------ | ----------------------------------------- | --------------------------------------- |
+| timetable-generator | v1     | `@ladesa/messages.timetable-generator.v1` | `Ladesa.Messages.TimetableGenerator.V1` |
 
 ## Adicionando Novo Schema
 
 1. Crie a estrutura:
+
    ```bash
    mkdir -p novo-dominio/v1/{json-schema/src,integrations/{typescript/pkg/src,csharp/sln/Generated}}
    ```
@@ -111,6 +118,7 @@ just tg1 build          # Build do timetable-generator v1
 2. Copie os arquivos base de `timetable-generator/v1`
 
 3. Adicione o novo pacote em `package.json` (workspaces):
+
    ```json
    {
      "workspaces": [
