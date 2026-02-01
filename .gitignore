@@ -1,1 +1,22 @@
-node_modules
+# Dependências
+node_modules/
+
+# Artefatos gerados
+**/lib/
+**/Generated/
+**/src/out.ts
+
+# Sistema
+.DS_Store
+*.log
+*.tmp
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build
+.cache/
+dist/

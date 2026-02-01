@@ -15,5 +15,6 @@ import "./entities/timetable_grid.tsp";
 import "./commands/generate/generate_request.tsp";
 import "./commands/generate/generate_response.tsp";
 
+@doc("Mensagens do serviço de geração de grade horária LADESA v1")
 @TypeSpec.JsonSchema.jsonSchema
 namespace Ladesa.Messages.TimetableGenerator.v1;
