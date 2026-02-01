@@ -1,11 +1,15 @@
 {
   "private": true,
+  "workspaces": [
+    "timetable-generator/v1/integrations/csharp/sln",
+    "timetable-generator/v1/integrations/typescript/pkg"
+  ],
   "scripts": {
     "changeset": "changeset",
     "version": "changeset version",
     "publish": "changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.0"
+    "@changesets/cli": "^2.29.8"
   }
 }
