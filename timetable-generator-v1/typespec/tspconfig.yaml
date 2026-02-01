@@ -1,0 +1,9 @@
+emit:
+  - "@typespec/json-schema"
+
+options:
+  "@typespec/json-schema":
+    emitter-output-dir: "{project-root}/dist/json-schema"
+    file-type: "json"
+    int64-strategy: "string"
+    bundleId: "timetable-generator-v1.schema.json"
