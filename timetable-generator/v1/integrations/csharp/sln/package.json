@@ -1,8 +1,5 @@
 {
   "name": "@ladesa/messages.timetable-generator.v1.csharp",
   "version": "0.0.1",
-  "private": true,
-  "dependencies": {
-    "quicktype": "23.2.6"
-  }
+  "private": true
 }
