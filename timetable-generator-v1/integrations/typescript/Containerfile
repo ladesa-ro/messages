@@ -1,4 +1,0 @@
-FROM oven/bun:latest
-WORKDIR /build
-RUN bun add quicktype-core quicktype
-ENTRYPOINT ["sh", "-c", "bunx quicktype --lang ts --src-lang schema /input/*.json -o /output/index.ts"]

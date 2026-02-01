@@ -1,4 +1,5 @@
 {
+  "private": "true",
   "dependencies": {
     "@typespec/compiler": "^1.8.0",
     "@typespec/json-schema": "^1.8.0"

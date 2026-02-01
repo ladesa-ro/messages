@@ -1,4 +1,0 @@
-FROM oven/bun:latest
-WORKDIR /build
-RUN bun add quicktype-core quicktype
-ENTRYPOINT ["sh", "-c", "bunx quicktype --lang cs --src-lang schema --namespace Ladesa.Messages.TimetableGenerator.V1 /input/*.json -o /output/Messages.cs"]

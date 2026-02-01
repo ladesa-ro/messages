@@ -1,5 +1,5 @@
 {
-  "name": "@ladesa/messages-timetable-generator-v1",
+  "name": "@ladesa/messages.timetable-generator.v1",
   "version": "0.0.1",
   "description": "Mensagens do TimetableGenerator v1",
   "main": "src/index.ts",
