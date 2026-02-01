@@ -1,9 +1,5 @@
 {
   "private": true,
-  "name": "@ladesa/messages",
-  "workspaces": [
-    "timetable-generator/v1/integrations/typescript/pkg"
-  ],
   "scripts": {
     "changeset": "changeset",
     "version": "changeset version",
