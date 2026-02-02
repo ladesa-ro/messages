@@ -6,10 +6,8 @@ schema_dist := schema_dir / "lib"
 ts_dir := project_root / "integrations" / "typescript"
 ts_pkg_dir := ts_dir
 cs_dir := project_root / "integrations" / "dotnet"
-tools_dir := project_root / ".." / ".." / "tools"
-ts_generator_dir := tools_dir / "schema-to-typescript"
-cs_generator_dir := tools_dir / "schema-to-csharp"
 cs_project_dir := cs_dir / "Ladesa.Messages.TimetableGenerator.V1"
+bun_image := "docker.io/oven/bun:1.3.8"
 
 # Lista comandos disponíveis
 default:
@@ -31,28 +29,36 @@ build-integrations: build-integration-ts build-integration-cs
 
 # Gera TypeScript via quicktype
 build-integration-ts:
-    podman build -t ladesa.local/quicktype-ts "{{ ts_generator_dir }}"
     mkdir -p "{{ ts_pkg_dir }}/lib"
     podman run --rm \
         -v "{{ schema_dist }}":/input:ro \
         -v "{{ ts_pkg_dir }}/lib":/output \
-        ladesa.local/quicktype-ts
+        {{ bun_image }} \
+        bun x quicktype@23.2.6 \
+            --src-lang schema \
+            '/input/schema.json#/$defs/' \
+            -o /output/out.ts
 
 # Gera C# via quicktype
 build-integration-cs:
-    podman build -t ladesa.local/quicktype-cs "{{ cs_generator_dir }}"
     mkdir -p "{{ cs_project_dir }}/Generated"
     podman run --rm \
         -v "{{ schema_dist }}":/input:ro \
         -v "{{ cs_project_dir }}/Generated":/output \
-        ladesa.local/quicktype-cs
+        {{ bun_image }} \
+        bun x quicktype@23.2.6 \
+            --src-lang schema \
+            '/input/schema.json#/$defs/' \
+            -o /output/Messages.cs \
+            --namespace Ladesa.Messages.TimetableGenerator.V1 \
+            --framework SystemTextJson
 
 # Limpa artefatos gerados
 clean:
     rm -rf "{{ schema_dist }}"
-    rm -rf "{{ ts_pkg_dir }}/src"
+    rm -rf "{{ ts_pkg_dir }}/lib"
     rm -rf "{{ cs_project_dir }}/Generated"
 
 # Limpa imagens de container
 clean-images:
-    -podman rmi ladesa.local/typespec-builder ladesa.local/quicktype-ts ladesa.local/quicktype-cs
+    -podman rmi ladesa.local/typespec-builder
