@@ -1,9 +1,10 @@
 FROM docker.io/oven/bun:1.3.8
 
 WORKDIR /app
+
 COPY ./package.json ./bun.lock /app/
 RUN bun install
 
-COPY . /app/
+COPY ./generate.sh /app/generate.sh
 
-ENTRYPOINT "/app/generate.sh";
+ENTRYPOINT "/app/generate.sh"

@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-
     <PackageId>Ladesa.Messages.TimetableGenerator.V1</PackageId>
     <Version>0.0.1</Version>
     <Description>Mensagens do TimetableGenerator v1</Description>
     <PackageTags>ladesa;messages;timetable-generator</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <!-- Ignorar warnings em codigo gerado automaticamente -->
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CS8618;CS8601;CS8603</NoWarn>
   </PropertyGroup>
 
 </Project>

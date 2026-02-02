@@ -2,10 +2,10 @@ services:
   dotnet:
     build:
       context: .
-      dockerfile: Containerfile
+      dockerfile: ./.docker/Containerfile
     working_dir: /app
     volumes:
-      - .:/app:z
+      - ./src:/app:z
       - nuget-cache:/root/.nuget/packages
     stdin_open: true
     tty: true
