@@ -1,8 +1,8 @@
 set dotenv-load := true
 
-solution_dir := justfile_directory()
-src_dir := solution_dir / "src"
-containerfile := solution_dir / "Containerfile"
+solution_dir := justfile_directory() / "Ladesa.Messages.TimetableGenerator.V1"
+src_dir := solution_dir
+containerfile := justfile_directory() / ".docker" / "Containerfile"
 image_name := "ladesa.local/dotnet-sdk"
 
 # Lista comandos disponíveis

@@ -12,7 +12,7 @@ changeset_image := "localhost/ladesa-messages-changeset:latest"
 
 # Builda imagem para changesets
 changeset-build-image:
-    podman build -t {{ changeset_image }} -f .github/Containerfile.changeset .
+    podman build -t {{ changeset_image }} -f .docker/Containerfile.changeset .
 
 # ========================================
 # Changesets (Versionamento)
