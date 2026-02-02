@@ -6,7 +6,7 @@ schema_dist := schema_dir / "lib"
 ts_dir := project_root / "integrations" / "typescript"
 ts_generator_dir := ts_dir / "generator"
 ts_pkg_dir := ts_dir / "pkg"
-cs_dir := project_root / "integrations" / "csharp"
+cs_dir := project_root / "integrations" / "dotnet"
 cs_generator_dir := cs_dir / "generator"
 cs_sln_dir := cs_dir / "sln"
 

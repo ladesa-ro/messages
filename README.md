@@ -17,7 +17,7 @@ messages/
 │       ├── json-schema/        # Definições TypeSpec
 │       └── integrations/       # Código gerado
 │           ├── typescript/     # Pacote npm
-│           └── csharp/         # Pacote NuGet
+│           └── dotnet/         # Pacote NuGet
 ├── justfile                    # Comandos globais
 └── package.json                # Workspaces + Changesets
 ```
@@ -112,7 +112,7 @@ just tg1 build          # Build do timetable-generator v1
 1. Crie a estrutura:
 
    ```bash
-   mkdir -p novo-dominio/v1/{json-schema/src,integrations/{typescript/pkg/src,csharp/sln/Generated}}
+   mkdir -p novo-dominio/v1/{json-schema/src,integrations/{typescript/pkg/src,dotnet/sln/Generated}}
    ```
 
 2. Copie os arquivos base de `timetable-generator/v1`

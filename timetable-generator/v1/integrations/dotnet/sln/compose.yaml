@@ -1,0 +1,16 @@
+services:
+  dotnet:
+    build:
+      context: .
+      dockerfile: Containerfile
+    working_dir: /app
+    volumes:
+      - .:/app:z
+      - nuget-cache:/root/.nuget/packages
+    stdin_open: true
+    tty: true
+    entrypoint: []
+    command: ["sleep", "infinity"]
+
+volumes:
+  nuget-cache:

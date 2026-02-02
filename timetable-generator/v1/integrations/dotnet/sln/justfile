@@ -1,0 +1,29 @@
+up:
+    podman compose up -d --build
+
+down:
+    podman compose down
+
+shell:
+    podman compose exec dotnet sh
+
+dotnet *args:
+    podman compose exec dotnet dotnet {{ args }}
+
+build *args:
+    podman compose exec dotnet dotnet build {{ args }}
+
+restore:
+    podman compose exec dotnet dotnet restore
+
+clean:
+    podman compose exec dotnet dotnet clean
+
+pack *args:
+    podman compose exec dotnet dotnet pack {{ args }}
+
+test *args:
+    podman compose exec dotnet dotnet test {{ args }}
+
+format *args:
+    podman compose exec dotnet dotnet format {{ args }}
