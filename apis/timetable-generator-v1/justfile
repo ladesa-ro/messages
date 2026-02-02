@@ -9,7 +9,7 @@ cs_dir := project_root / "integrations" / "dotnet"
 tools_dir := project_root / ".." / ".." / "tools"
 ts_generator_dir := tools_dir / "schema-to-typescript"
 cs_generator_dir := tools_dir / "schema-to-csharp"
-cs_sln_dir := cs_dir / "solution"
+cs_project_dir := cs_dir / "Ladesa.Messages.TimetableGenerator.V1"
 
 # Lista comandos disponíveis
 default:
@@ -41,17 +41,17 @@ build-integration-ts:
 # Gera C# via quicktype
 build-integration-cs:
     podman build -t ladesa.local/quicktype-cs "{{ cs_generator_dir }}"
-    mkdir -p "{{ cs_sln_dir }}/Generated"
+    mkdir -p "{{ cs_project_dir }}/Generated"
     podman run --rm \
         -v "{{ schema_dist }}":/input:ro \
-        -v "{{ cs_sln_dir }}/Generated":/output \
+        -v "{{ cs_project_dir }}/Generated":/output \
         ladesa.local/quicktype-cs
 
 # Limpa artefatos gerados
 clean:
     rm -rf "{{ schema_dist }}"
     rm -rf "{{ ts_pkg_dir }}/src"
-    rm -rf "{{ cs_sln_dir }}/Generated"
+    rm -rf "{{ cs_project_dir }}/Generated"
 
 # Limpa imagens de container
 clean-images:

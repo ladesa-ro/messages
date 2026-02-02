@@ -2,7 +2,7 @@ set dotenv-load := true
 
 solution_dir := justfile_directory()
 src_dir := solution_dir / "src"
-containerfile := solution_dir / ".docker" / "Containerfile"
+containerfile := solution_dir / "Containerfile"
 image_name := "ladesa.local/dotnet-sdk"
 
 # Lista comandos disponíveis

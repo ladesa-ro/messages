@@ -48,7 +48,7 @@ changeset-status:
 
 # Build de todos os pacotes
 build-all:
-    just timetable-generator/v1/build
+    just apis/timetable-generator-v1/build
 
 # ========================================
 # Atalhos para pacotes específicos
@@ -56,4 +56,4 @@ build-all:
 
 # Alias para timetable-generator v1
 tg1 *args:
-    just timetable-generator/v1/{{ args }}
+    just apis/timetable-generator-v1/{{ args }}
