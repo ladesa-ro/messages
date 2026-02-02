@@ -1,29 +1,69 @@
-up:
-    podman compose up -d --build
+set dotenv-load := true
 
-down:
-    podman compose down
+solution_dir := justfile_directory()
+src_dir := solution_dir / "src"
+containerfile := solution_dir / ".docker" / "Containerfile"
+image_name := "ladesa.local/dotnet-sdk"
 
+# Lista comandos disponíveis
+default:
+    @just --list
+
+# ========================================
+# Container Efêmero
+# ========================================
+
+# Build da imagem do SDK .NET
+build-image:
+    podman build -t {{ image_name }} -f {{ containerfile }} {{ solution_dir }}
+
+# Executa comando no container efêmero
+[private]
+run *args:
+    podman run --rm \
+        -v "{{ src_dir }}":/app:z \
+        -v ladesa-nuget-cache:/root/.nuget/packages \
+        -w /app \
+        {{ image_name }} \
+        {{ args }}
+
+# Abre shell interativo no container efêmero
 shell:
-    podman compose exec dotnet sh
+    podman run --rm -it \
+        -v "{{ src_dir }}":/app:z \
+        -v ladesa-nuget-cache:/root/.nuget/packages \
+        -w /app \
+        {{ image_name }} \
+        sh
 
+# ========================================
+# Comandos .NET
+# ========================================
+
+# Executa comando dotnet arbitrário
 dotnet *args:
-    podman compose exec dotnet dotnet {{ args }}
+    just run dotnet {{ args }}
 
-build *args:
-    podman compose exec dotnet dotnet build {{ args }}
-
+# Restaura dependências
 restore:
-    podman compose exec dotnet dotnet restore
+    just run dotnet restore
 
+# Build do projeto
+build *args:
+    just run dotnet build {{ args }}
+
+# Limpa artefatos de build
 clean:
-    podman compose exec dotnet dotnet clean
+    just run dotnet clean
 
+# Empacota para NuGet
 pack *args:
-    podman compose exec dotnet dotnet pack {{ args }}
+    just run dotnet pack {{ args }}
 
+# Executa testes
 test *args:
-    podman compose exec dotnet dotnet test {{ args }}
+    just run dotnet test {{ args }}
 
+# Formata código
 format *args:
-    podman compose exec dotnet dotnet format {{ args }}
+    just run dotnet format {{ args }}
