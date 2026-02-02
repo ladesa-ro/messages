@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
+      - name: Install just
+        uses: extractions/setup-just@v3
       - name: Install bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -35,7 +37,7 @@ jobs:
         id: changesets
         with:
           publish: false
-          version: echo "version!!"
+          version: just version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
