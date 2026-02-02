@@ -6,4 +6,4 @@ RUN bun install
 
 COPY . /app/
 
-ENTRYPOINT "/app/commands/generate.sh";
+ENTRYPOINT "/app/generate.sh";

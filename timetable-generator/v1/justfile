@@ -7,8 +7,8 @@ ts_dir := project_root / "integrations" / "typescript"
 ts_generator_dir := ts_dir / "generator"
 ts_pkg_dir := ts_dir / "pkg"
 cs_dir := project_root / "integrations" / "dotnet"
-cs_generator_dir := cs_dir / "generator"
-cs_sln_dir := cs_dir / "sln"
+cs_generator_dir := cs_dir / ".codegen"
+cs_sln_dir := cs_dir / "solution"
 
 # Lista comandos disponíveis
 default:
