@@ -2,7 +2,6 @@
 node_modules/
 
 # Artefatos gerados
-**/lib/
 **/Generated/
 **/src/out.ts
 

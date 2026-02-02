@@ -4,10 +4,11 @@ project_root := justfile_directory()
 schema_dir := project_root / "json-schema"
 schema_dist := schema_dir / "lib"
 ts_dir := project_root / "integrations" / "typescript"
-ts_generator_dir := ts_dir / ".codegen"
-ts_pkg_dir := ts_dir / "pkg"
+ts_pkg_dir := ts_dir
 cs_dir := project_root / "integrations" / "dotnet"
-cs_generator_dir := cs_dir / ".codegen"
+tools_dir := project_root / ".." / ".." / "tools"
+ts_generator_dir := tools_dir / "schema-to-typescript"
+cs_generator_dir := tools_dir / "schema-to-csharp"
 cs_sln_dir := cs_dir / "solution"
 
 # Lista comandos disponíveis
@@ -31,10 +32,10 @@ build-integrations: build-integration-ts build-integration-cs
 # Gera TypeScript via quicktype
 build-integration-ts:
     podman build -t ladesa.local/quicktype-ts "{{ ts_generator_dir }}"
-    mkdir -p "{{ ts_pkg_dir }}/src"
+    mkdir -p "{{ ts_pkg_dir }}/lib"
     podman run --rm \
         -v "{{ schema_dist }}":/input:ro \
-        -v "{{ ts_pkg_dir }}/src":/output \
+        -v "{{ ts_pkg_dir }}/lib":/output \
         ladesa.local/quicktype-ts
 
 # Gera C# via quicktype

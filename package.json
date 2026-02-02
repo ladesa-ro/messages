@@ -2,7 +2,7 @@
   "private": true,
   "workspaces": [
     "timetable-generator/v1/integrations/dotnet/sln",
-    "timetable-generator/v1/integrations/typescript/pkg"
+    "timetable-generator/v1/integrations/typescript"
   ],
   "scripts": {
     "changeset": "changeset",
