@@ -43,12 +43,42 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  ci-timetable-generator-v1-dotnet:
-    name: "[Publish] TimetableGenerator v1 - NuGet"
+  build-timetable-generator-v1:
+    name: "[Build] timetable-generator-v1"
 
     needs:
       - changesets
     if: needs.changesets.outputs.hasChangesets == 'false'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Install just
+        uses: extractions/setup-just@v3
+
+      - name: Build all integrations
+        run: just apis/timetable-generator-v1/build
+
+      - name: Upload TypeScript artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: timetable-generator-v1-typescript
+          path: apis/timetable-generator-v1/integrations/typescript
+
+      - name: Upload C# artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: timetable-generator-v1-dotnet
+          path: apis/timetable-generator-v1/integrations/dotnet
+
+  publish-timetable-generator-v1-nuget:
+    name: "[Publish] timetable-generator-v1 - NuGet"
+
+    needs:
+      - build-timetable-generator-v1
 
     runs-on: ubuntu-latest
 
@@ -57,11 +87,14 @@ jobs:
 
     defaults:
       run:
-        working-directory: apis/timetable-generator-v1/integrations/dotnet/Ladesa.Messages.TimetableGenerator.V1
+        working-directory: dotnet/Ladesa.Messages.TimetableGenerator.V1
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v6
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: timetable-generator-v1-dotnet
+          path: dotnet
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -80,12 +113,35 @@ jobs:
       - name: Push to NuGet
         run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
-  ci-timetable-generator-v1-npm:
+  publish-timetable-generator-v1-npm:
+    name: "[Publish] timetable-generator-v1 - npm"
+
     needs:
-      - changesets
-    if: needs.changesets.outputs.hasChangesets == 'false'
+      - build-timetable-generator-v1
+
     runs-on: ubuntu-latest
+
     environment:
       name: ci-timetable-generator-v1-npm
+
+    defaults:
+      run:
+        working-directory: typescript
+
     steps:
-      - run: "echo hello world!"
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: timetable-generator-v1-typescript
+          path: typescript
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
