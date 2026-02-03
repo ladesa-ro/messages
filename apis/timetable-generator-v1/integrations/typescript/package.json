@@ -1,6 +1,9 @@
 {
   "name": "@ladesa-ro/messages.timetable-generator.v1",
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.0.2",
   "main": "lib/index.ts",
   "types": "lib/index.ts"
