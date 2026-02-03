@@ -2,7 +2,8 @@
   "private": true,
   "dependencies": {
     "@typespec/compiler": "^1.8.0",
-    "@typespec/json-schema": "^1.8.0"
+    "@typespec/json-schema": "^1.8.0",
+    "quicktype": "^23.2.6"
   },
   "scripts": {
     "build": "tsp compile --config=tspconfig.yaml src/main.tsp",

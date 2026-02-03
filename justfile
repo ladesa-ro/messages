@@ -5,6 +5,35 @@ default:
     @just --list
 
 # ========================================
+# Setup
+# ========================================
+
+# Instala dependências e configura hooks
+setup:
+    bun install
+    lefthook install
+
+# ========================================
+# Linting & Formatting
+# ========================================
+
+# Verifica lint e formatação
+lint:
+    bunx biome check .
+
+# Corrige lint e formatação automaticamente
+lint-fix:
+    bunx biome check --write .
+
+# Formata código
+format:
+    bunx biome format --write .
+
+# Formata código .NET
+format-dotnet:
+    dotnet format
+
+# ========================================
 # Changesets (Versionamento)
 # ========================================
 
@@ -40,7 +69,7 @@ changeset-status:
     bunx changeset status
 
 # ========================================
-# Build (todos os pacotes)
+# Build
 # ========================================
 
 # Build de todos os pacotes
@@ -48,7 +77,15 @@ build-all:
     just apis/timetable-generator-v1/build
 
 # ========================================
-# Atalhos para pacotes específicos
+# CI
+# ========================================
+
+# Roda todas as verificações do CI localmente
+ci: lint
+    just build-all
+
+# ========================================
+# Atalhos
 # ========================================
 
 # Alias para timetable-generator v1
