@@ -1,57 +1,56 @@
 set dotenv-load := true
 
-project_root := justfile_directory()
-schema_dir := project_root / "json-schema"
-schema_dist := schema_dir / "lib"
-ts_dir := project_root / "integrations" / "typescript"
-ts_pkg_dir := ts_dir
-cs_dir := project_root / "integrations" / "dotnet"
-cs_project_dir := cs_dir / "Ladesa.Messages.TimetableGenerator.V1"
+root := justfile_directory()
+schema_dir := root / "json-schema"
+schema_out := schema_dir / "lib"
+ts_dir := root / "integrations" / "typescript"
+cs_dir := root / "integrations" / "dotnet" / "Ladesa.Messages.TimetableGenerator.V1"
 
 # Lista comandos disponíveis
 default:
     @just --list
 
-# Build tudo (schema + integrações)
-build: build-schema build-integrations
+# ========================================
+# Build
+# ========================================
+
+# Build completo (schema + integrações)
+build: build-schema build-ts build-cs
 
 # Gera JSON Schema via TypeSpec
 build-schema:
     cd "{{ schema_dir }}" && bun install --frozen-lockfile && bun run build
 
-# Build apenas integrações (ts e cs em paralelo)
-build-integrations: build-integration-ts build-integration-cs
-
 # Gera TypeScript via quicktype
-build-integration-ts:
-    mkdir -p "{{ ts_pkg_dir }}/lib"
+build-ts:
+    mkdir -p "{{ ts_dir }}/lib"
     cd "{{ schema_dir }}" && bunx quicktype \
         --src-lang schema \
-        '{{ schema_dist }}/schema.json#/$defs/' \
-        -o "{{ ts_pkg_dir }}/lib/out.ts"
+        '{{ schema_out }}/schema.json#/$defs/' \
+        -o "{{ ts_dir }}/lib/out.ts"
 
 # Gera C# via quicktype
-build-integration-cs:
-    mkdir -p "{{ cs_project_dir }}/Generated"
+build-cs:
+    mkdir -p "{{ cs_dir }}/Generated"
     cd "{{ schema_dir }}" && bunx quicktype \
         --src-lang schema \
-        '{{ schema_dist }}/schema.json#/$defs/' \
-        -o "{{ cs_project_dir }}/Generated/Messages.cs" \
+        '{{ schema_out }}/schema.json#/$defs/' \
+        -o "{{ cs_dir }}/Generated/Messages.cs" \
         --namespace Ladesa.Messages.TimetableGenerator.V1 \
         --framework SystemTextJson
 
-# Build .NET project
-build-dotnet:
-    cd "{{ cs_project_dir }}" && dotnet build
+# ========================================
+# Desenvolvimento
+# ========================================
+
+# Watch mode para TypeSpec
+watch:
+    cd "{{ schema_dir }}" && bun run --watch build
 
 # Limpa artefatos gerados
 clean:
-    rm -rf "{{ schema_dist }}"
-    rm -rf "{{ ts_pkg_dir }}/lib"
-    rm -rf "{{ cs_project_dir }}/Generated"
-    rm -rf "{{ cs_project_dir }}/bin"
-    rm -rf "{{ cs_project_dir }}/obj"
-
-# Watch mode para desenvolvimento
-watch:
-    cd "{{ schema_dir }}" && bun run --watch build
+    rm -rf "{{ schema_out }}"
+    rm -rf "{{ ts_dir }}/lib"
+    rm -rf "{{ cs_dir }}/Generated"
+    rm -rf "{{ cs_dir }}/bin"
+    rm -rf "{{ cs_dir }}/obj"
