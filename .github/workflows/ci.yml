@@ -142,6 +142,9 @@ jobs:
       name: ci-timetable-generator-v1-npm
       url: https://www.npmjs.com/package/@ladesa-ro/messages.timetable-generator.v1
 
+    permissions:
+      id-token: write
+
     steps:
       - uses: actions/checkout@v6
 
@@ -157,5 +160,3 @@ jobs:
 
       - run: npm publish
         working-directory: apis/timetable-generator-v1/integrations/typescript
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
