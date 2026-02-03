@@ -5,12 +5,12 @@ pre-commit:
   parallel: true
   commands:
     biome-check:
-      glob: "*.{ts,tsx,js,jsx,json}"
+      glob: "**/*.{ts,tsx,js,jsx,json}"
       run: bunx biome check --write --staged {staged_files}
       stage_fixed: true
 
     dotnet-format:
-      glob: "*.cs"
+      glob: "**/*.cs"
       run: dotnet format --include {staged_files} --verbosity quiet
       stage_fixed: true
 

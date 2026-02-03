@@ -6,7 +6,9 @@ on:
       - main
   workflow_dispatch:
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   DEVCONTAINER_IMAGE: ghcr.io/${{ github.repository }}/devcontainer
@@ -146,4 +148,4 @@ jobs:
           cacheFrom: ${{ env.DEVCONTAINER_IMAGE }}
           runCmd: |
             cd apis/timetable-generator-v1/integrations/typescript
-            npm publish --access public
+            npm publish
