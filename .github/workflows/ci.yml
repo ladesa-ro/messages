@@ -158,5 +158,13 @@ jobs:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
-      - run: npm publish
+      - name: Publish if new version
         working-directory: apis/timetable-generator-v1/integrations/typescript
+        run: |
+          npm publish 2>&1 | tee publish.log || {
+            if grep -q "cannot publish over the previously published" publish.log; then
+              echo "Version already published, skipping"
+            else
+              exit 1
+            fi
+          }
