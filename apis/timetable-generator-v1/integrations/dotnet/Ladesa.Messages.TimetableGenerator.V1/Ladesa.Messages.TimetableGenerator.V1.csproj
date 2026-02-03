@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Ladesa.Messages.TimetableGenerator.V1</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Description>Mensagens do TimetableGenerator v1</Description>
     <PackageTags>ladesa;messages;timetable-generator</PackageTags>
   </PropertyGroup>
