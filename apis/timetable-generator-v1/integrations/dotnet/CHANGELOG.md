@@ -1,4 +1,4 @@
-# @ladesa/messages.timetable-generator.v1.dotnet
+# @ladesa-ro/messages.timetable-generator.v1.dotnet
 
 ## 0.0.2
 

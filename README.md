@@ -103,9 +103,9 @@ just tg1 build          # Build do timetable-generator v1
 
 ## Pacotes
 
-| Domínio             | Versão | npm                                       | NuGet                                   |
-| ------------------- | ------ | ----------------------------------------- | --------------------------------------- |
-| timetable-generator | v1     | `@ladesa/messages.timetable-generator.v1` | `Ladesa.Messages.TimetableGenerator.V1` |
+| Domínio             | Versão | npm                                          | NuGet                                   |
+| ------------------- | ------ | -------------------------------------------- | --------------------------------------- |
+| timetable-generator | v1     | `@ladesa-ro/messages.timetable-generator.v1` | `Ladesa.Messages.TimetableGenerator.V1` |
 
 ## Adicionando Novo Schema
 
