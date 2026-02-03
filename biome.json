@@ -41,12 +41,6 @@
     }
   },
   "files": {
-    "ignore": [
-      "node_modules",
-      "bun.lock",
-      "**/bin/**",
-      "**/obj/**",
-      "**/*.cs"
-    ]
+    "ignore": ["node_modules", "bun.lock", "**/bin/**", "**/obj/**", "**/*.cs"]
   }
 }
