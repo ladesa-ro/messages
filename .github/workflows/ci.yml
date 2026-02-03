@@ -107,7 +107,10 @@ jobs:
     name: Publish NuGet
     needs: build
     runs-on: ubuntu-latest
-    environment: ci-timetable-generator-v1-dotnet
+
+    environment:
+      name: ci-timetable-generator-v1-dotnet
+      url: https://www.nuget.org/packages/Ladesa.Messages.TimetableGenerator.V1/
 
     steps:
       - uses: actions/checkout@v6
@@ -134,7 +137,10 @@ jobs:
     name: Publish npm
     needs: build
     runs-on: ubuntu-latest
-    environment: ci-timetable-generator-v1-npm
+
+    environment:
+      name: ci-timetable-generator-v1-npm
+      url: https://www.npmjs.com/package/@ladesa-ro/messages.timetable-generator.v1
 
     steps:
       - uses: actions/checkout@v6
