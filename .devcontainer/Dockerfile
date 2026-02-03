@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     git \
     unzip \
+    libicu72 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install .NET SDK
@@ -45,7 +46,9 @@ RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
 RUN curl -fsSL https://just.systems/install.sh | bash -s -- --to /usr/local/bin --tag ${JUST_VERSION}
 
 # Install Lefthook
-RUN curl -fsSL https://raw.githubusercontent.com/evilmartians/lefthook/master/install.sh | bash -s -- -d -b /usr/local/bin
+ARG LEFTHOOK_VERSION=1.11.5
+RUN curl -fsSL "https://github.com/evilmartians/lefthook/releases/download/v${LEFTHOOK_VERSION}/lefthook_${LEFTHOOK_VERSION}_Linux_x86_64" -o /usr/local/bin/lefthook \
+    && chmod +x /usr/local/bin/lefthook
 
 WORKDIR /workspace
 

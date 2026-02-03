@@ -8,18 +8,49 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+env:
+  DEVCONTAINER_IMAGE: ghcr.io/${{ github.repository }}/devcontainer:latest
+
 jobs:
+  build-devcontainer:
+    name: "[CI] Build DevContainer"
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          imageName: ${{ env.DEVCONTAINER_IMAGE }}
+          cacheFrom: ${{ env.DEVCONTAINER_IMAGE }}
+          push: always
+
   lint:
     name: "[CI] Lint"
+    needs: build-devcontainer
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Run lint in devcontainer
         uses: devcontainers/ci@v0.3
         with:
+          cacheFrom: ${{ env.DEVCONTAINER_IMAGE }}
           runCmd: bun install && bun run lint
 
   changesets:
@@ -36,7 +67,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Install just
         uses: extractions/setup-just@v3
@@ -66,11 +97,12 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Build in devcontainer
         uses: devcontainers/ci@v0.3
         with:
+          cacheFrom: ${{ env.DEVCONTAINER_IMAGE }}
           runCmd: |
             bun install
             just apis/timetable-generator-v1/build
@@ -97,7 +129,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -110,6 +142,7 @@ jobs:
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         with:
+          cacheFrom: ${{ env.DEVCONTAINER_IMAGE }}
           runCmd: |
             cd apis/timetable-generator-v1/integrations/dotnet/Ladesa.Messages.TimetableGenerator.V1
             dotnet restore
@@ -127,7 +160,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -141,6 +174,7 @@ jobs:
       - name: Publish to npm in devcontainer
         uses: devcontainers/ci@v0.3
         with:
+          cacheFrom: ${{ env.DEVCONTAINER_IMAGE }}
           runCmd: |
             cd apis/timetable-generator-v1/integrations/typescript
             npm publish --access public
