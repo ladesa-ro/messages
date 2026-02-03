@@ -1,4 +1,4 @@
-name: "[CI] Changesets"
+name: "Continuos Integration"
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 env:
-  DEVCONTAINER_IMAGE: ghcr.io/${{ github.repository }}/devcontainer:latest
+  DEVCONTAINER_IMAGE: ghcr.io/${{ github.repository }}/devcontainer
 
 jobs:
   build-devcontainer:
