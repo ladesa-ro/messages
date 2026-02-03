@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     wget \
     git \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Install .NET SDK
