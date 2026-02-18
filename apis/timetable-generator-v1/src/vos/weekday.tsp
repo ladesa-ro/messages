@@ -3,23 +3,23 @@ namespace Ladesa.Messages.TimetableGenerator.v1;
 @doc("Dias da semana")
 enum WeekDay {
   @doc("Domingo")
-  Sunday,
+  Sunday: 0,
 
   @doc("Segunda-feira")
-  Monday,
+  Monday: 1,
 
   @doc("Terça-feira")
-  Tuesday,
+  Tuesday: 2,
 
   @doc("Quarta-feira")
-  Wednesday,
+  Wednesday: 3,
 
   @doc("Quinta-feira")
-  Thursday,
+  Thursday: 4,
 
   @doc("Sexta-feira")
-  Friday,
+  Friday: 5,
 
   @doc("Sábado")
-  Saturday,
+  Saturday: 6,
 }
