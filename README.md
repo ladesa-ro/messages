@@ -1,135 +1,63 @@
-# LADESA Messages
+# messages
 
-[![Changesets](https://github.com/ladesa-ro/messages/actions/workflows/changesets.yml/badge.svg)](https://github.com/ladesa-ro/messages/actions/workflows/changesets.yml)
-
-Repositório de schemas e mensagens compartilhadas entre serviços LADESA.
+Repositório de schemas e mensagens compartilhadas dos serviços LADESA. Cada subpacote em `apis/` define mensagens usando [TypeSpec](https://typespec.io/) e gera JSON Schema, disponibilizado via GitHub Releases.
 
 ## Estrutura
 
 ```
 messages/
-├── .changeset/                 # Configuração do Changesets
-├── .github/workflows/          # CI/CD
-├── timetable-generator/
-│   └── v1/                     # Versão major da API
-│       ├── CHANGELOG.md
-│       ├── justfile
-│       ├── json-schema/        # Definições TypeSpec
-│       └── integrations/       # Código gerado
-│           ├── typescript/     # Pacote npm
-│           └── dotnet/         # Pacote NuGet
-├── justfile                    # Comandos globais
-└── package.json                # Workspaces + Changesets
+├── .changeset/          # Controle de versão (changesets)
+├── .github/workflows/   # CI: build + release
+├── package.json         # Root workspace
+└── apis/
+    └── timetable-generator-v1/
+        ├── package.json     # Dependências TypeSpec
+        ├── tspconfig.yaml   # Configuração do emitter
+        └── src/             # Arquivos .tsp
 ```
 
-## Pré-requisitos
+## Desenvolvimento
 
-- [just](https://github.com/casey/just) - Command runner
-- [Podman](https://podman.io/) - Container runtime
+### Pré-requisitos
 
-## Uso Rápido
+- [Bun](https://bun.sh/)
+
+### Compilar localmente
 
 ```bash
-# Build de um pacote específico
-just tg1 build
-
-# Ou diretamente
-cd timetable-generator/v1 && just build
+bun install
+bun run build
 ```
 
-## Versionamento com Changesets
+O schema gerado fica em `apis/<subpacote>/tsp-output/schema.json`.
 
-Este repositório usa [Changesets](https://github.com/changesets/changesets) para gerenciar versões.
+### Adicionar changeset
 
-### Fluxo de Trabalho
-
-1. **Faça suas alterações** nos arquivos `.tsp`
-
-2. **Crie um changeset** descrevendo a mudança:
-
-   ```bash
-   just changeset-add
-   ```
-
-   Isso abre um prompt interativo para:
-
-   - Selecionar pacotes afetados
-   - Escolher tipo de bump (patch/minor/major)
-   - Escrever descrição da mudança
-
-3. **Commit e push**:
-
-   ```bash
-   git add .
-   git commit -m "feat: sua mudança"
-   git push
-   ```
-
-4. **O CI/CD automaticamente**:
-   - Cria um PR "Version Packages" acumulando changesets
-   - Ao fazer merge do PR, publica npm + NuGet e cria tags
-
-### Comandos Disponíveis
+Após fazer alterações, registre um changeset para versionamento:
 
 ```bash
-just                    # Lista todos os comandos
-just changeset-add      # Adiciona um changeset (interativo)
-just changeset-version  # Aplica versões pendentes
-just changeset-status   # Mostra changesets pendentes
-just build-all          # Build de todos os pacotes
-just tg1 build          # Build do timetable-generator v1
+bunx changeset
 ```
 
-## Arquitetura
+## Releases
+
+O CI publica automaticamente o `schema.json` como ativo em GitHub Releases ao mergear a PR "Version Packages" criada pelo changesets.
+
+### URL do schema
 
 ```
-┌─────────────────┐
-│   TypeSpec      │  Fonte única de verdade
-│   (.tsp files)  │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│   JSON Schema   │  Schema intermediário
-│   (schema.json) │
-└────────┬────────┘
-         │
-    ┌────┴────┐
-    ▼         ▼
-┌───────┐ ┌───────┐
-│  npm  │ │ NuGet │  Pacotes publicados
-└───────┘ └───────┘
+https://github.com/ladesa-ro/messages/releases/download/<subpacote>%2Fv<VERSION>/schema.json
 ```
 
-## Pacotes
+Exemplo:
 
-| Domínio             | Versão | npm                                          | NuGet                                   |
-| ------------------- | ------ | -------------------------------------------- | --------------------------------------- |
-| timetable-generator | v1     | `@ladesa-ro/messages.timetable-generator.v1` | `Ladesa.Messages.TimetableGenerator.V1` |
+```
+https://github.com/ladesa-ro/messages/releases/download/timetable-generator-v1%2Fv0.0.2/schema.json
+```
 
-## Adicionando Novo Schema
+## Adicionar novo subpacote
 
-1. Crie a estrutura:
-
-   ```bash
-   mkdir -p novo-dominio/v1/{json-schema/src,integrations/{typescript/pkg/src,dotnet/sln/Generated}}
-   ```
-
-2. Copie os arquivos base de `timetable-generator/v1`
-
-3. Adicione o novo pacote em `package.json` (workspaces):
-
-   ```json
-   {
-     "workspaces": [
-       "timetable-generator/v1/integrations/typescript/pkg",
-       "novo-dominio/v1/integrations/typescript/pkg"
-     ]
-   }
-   ```
-
-4. Atualize `.github/workflows/release.yml` para incluir o novo pacote
-
-## Licença
-
-MIT
+1. Crie `apis/<nome>/package.json` com dependências TypeSpec e script `build`
+2. Crie `apis/<nome>/tspconfig.yaml` configurando o emitter
+3. Crie `apis/<nome>/src/main.tsp` com seus modelos
+4. Execute `bun install && bun run build` para validar

@@ -2,169 +2,79 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
-env:
-  DEVCONTAINER_IMAGE: ghcr.io/${{ github.repository }}/devcontainer
-
 jobs:
-  build-devcontainer:
-    name: Build DevContainer
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
     steps:
-      - uses: actions/checkout@v6
-
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: devcontainers/ci@v0.3
-        with:
-          imageName: ${{ env.DEVCONTAINER_IMAGE }}
-          cacheFrom: ${{ env.DEVCONTAINER_IMAGE }}
-          push: always
-
-  lint:
-    name: Lint
-    needs: build-devcontainer
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: devcontainers/ci@v0.3
-        with:
-          cacheFrom: ${{ env.DEVCONTAINER_IMAGE }}
-          push: never
-          runCmd: bun install && bun run lint
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run build
 
   changesets:
     name: Changesets
-    needs: lint
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
     outputs:
       hasChangesets: ${{ steps.changesets.outputs.hasChangesets }}
-
     steps:
-      - uses: actions/checkout@v6
-
-      - uses: extractions/setup-just@v3
-
+      - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: "1.3.8"
-
-      - run: bun install
-
+      - run: bun install --frozen-lockfile
       - uses: changesets/action@v1
         id: changesets
         with:
-          version: just version
+          version: bun run version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build:
-    name: Build
+  release:
+    name: Release
     needs: changesets
     if: needs.changesets.outputs.hasChangesets == 'false'
     runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: devcontainers/ci@v0.3
-        with:
-          cacheFrom: ${{ env.DEVCONTAINER_IMAGE }}
-          push: never
-          runCmd: bun install && just build
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: timetable-generator-v1-typescript
-          path: apis/timetable-generator-v1/integrations/typescript
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: timetable-generator-v1-dotnet
-          path: apis/timetable-generator-v1/integrations/dotnet
-
-  publish-nuget:
-    name: Publish NuGet
-    needs: build
-    runs-on: ubuntu-latest
-
-    environment:
-      name: ci-timetable-generator-v1-dotnet
-      url: https://www.nuget.org/packages/Ladesa.Messages.TimetableGenerator.V1/
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/download-artifact@v7
-        with:
-          name: timetable-generator-v1-dotnet
-          path: apis/timetable-generator-v1/integrations/dotnet
-
-      - uses: devcontainers/ci@v0.3
-        with:
-          cacheFrom: ${{ env.DEVCONTAINER_IMAGE }}
-          push: never
-          env: |
-            NUGET_API_KEY=${{ secrets.NUGET_API_KEY }}
-          runCmd: |
-            cd apis/timetable-generator-v1/integrations/dotnet/Ladesa.Messages.TimetableGenerator.V1
-            dotnet restore
-            dotnet build --configuration Release --no-restore
-            dotnet pack --configuration Release --no-build --output ./nupkg
-            dotnet nuget push ./nupkg/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
-
-  publish-npm:
-    name: Publish npm
-    needs: build
-    runs-on: ubuntu-latest
-
-    environment:
-      name: ci-timetable-generator-v1-npm
-      url: https://www.npmjs.com/package/@ladesa-ro/messages.timetable-generator.v1
-
     permissions:
-      id-token: write
-
+      contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run build
 
-      - uses: actions/download-artifact@v7
-        with:
-          name: timetable-generator-v1-typescript
-          path: apis/timetable-generator-v1/integrations/typescript
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Publish if new version
-        working-directory: apis/timetable-generator-v1/integrations/typescript
+      - name: Create GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm publish 2>&1 | tee publish.log || {
-            if grep -q "cannot publish over the previously published" publish.log; then
-              echo "Version already published, skipping"
-            else
-              exit 1
+          for dir in apis/*/; do
+            name=$(basename "$dir")
+            version=$(jq -r '.version' "$dir/package.json")
+            tag="${name}/v${version}"
+
+            if gh release view "$tag" > /dev/null 2>&1; then
+              echo "Release $tag already exists, skipping"
+              continue
             fi
-          }
+
+            schema_file="$dir/tsp-output/schema.json"
+            if [ ! -f "$schema_file" ]; then
+              echo "No schema.json found for $name, skipping"
+              continue
+            fi
+
+            gh release create "$tag" "$schema_file" \
+              --title "$name v$version" \
+              --notes "JSON Schema for $name API messages." \
+              --latest=false
+            echo "Created release $tag"
+          done

@@ -3,7 +3,7 @@ emit:
 
 options:
   "@typespec/json-schema":
-    emitter-output-dir: "{project-root}/lib"
+    emitter-output-dir: "{project-root}/tsp-output"
     bundleId: "schema.json"
     file-type: "json"
     int64-strategy: "string"

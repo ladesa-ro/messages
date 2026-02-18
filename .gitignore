@@ -1,23 +1,4 @@
-# Dependências
 node_modules/
-
-# Artefatos gerados
-**/Generated/
-**/src/out.ts
-
-# Sistema
+**/tsp-output/
 .DS_Store
 *.log
-*.tmp
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Build
-.cache/
-dist/
-bin/
-obj/

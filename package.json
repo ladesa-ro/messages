@@ -1,19 +1,11 @@
 {
   "private": true,
-  "workspaces": [
-    "apis/timetable-generator-v1/integrations/dotnet",
-    "apis/timetable-generator-v1/integrations/typescript"
-  ],
+  "workspaces": ["apis/*"],
   "scripts": {
-    "changeset": "changeset",
-    "version": "changeset version",
-    "publish": "changeset publish",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "format": "biome format --write ."
+    "build": "bun run --filter '*' build",
+    "version": "bunx changeset version"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
     "@changesets/cli": "^2.29.8"
   }
 }
