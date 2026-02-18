@@ -2,3 +2,5 @@ node_modules/
 **/tsp-output/
 .DS_Store
 *.log
+/.idea/vcs.xml
+/.idea/workspace.xml
