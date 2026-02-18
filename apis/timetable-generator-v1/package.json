@@ -1,7 +1,7 @@
 {
   "name": "@ladesa-ro/messages-timetable-generator-v1",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "dependencies": {
     "@typespec/compiler": "^1.8.0",
     "@typespec/json-schema": "^1.8.0"
